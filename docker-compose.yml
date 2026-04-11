@@ -1,0 +1,47 @@
+services:
+  # Слой Model: База данных
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432" # Позволяет DBeaver/pgAdmin видеть БД на localhost:5432
+    container_name: weather_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - weather_network
+
+  # Слой Controller/Service: Наш Python бэкенд
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: weather_django
+    env_file:
+      - .env
+    depends_on:
+      - db
+# связываем контейнер с папкой с проектом,
+# чтобы при измение кода Django автоматом их видел и применял на "лету"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_NAME}
+    networks:
+      - weather_network
+
+volumes:
+  db_data:
+
+networks:
+  weather_network:
+    driver: bridge

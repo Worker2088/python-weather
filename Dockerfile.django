@@ -1,0 +1,32 @@
+# Используем официальный образ Python 3.12
+FROM python:3.12-slim
+
+# Устанавливаем uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Сначала копируем только файлы зависимостей (для кэширования слоев)
+COPY pyproject.toml uv.lock ./
+
+# 👉 ВАЖНО: уносим виртуальное окружение из /app
+# ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+
+# Устанавливаем окружение ВНЕ папки /app
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+# Эти переменные заставят систему всегда использовать правильный Python
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Устанавливаем зависимости без создания виртуального окружения внутри контейнера
+RUN uv sync --frozen --no-cache
+
+# Копируем остальной код проекта
+COPY . .
+
+# Указываем WORKDIR конкретно в папку с кодом Django для запуска команд
+WORKDIR /app/siteweather
+
+# Запускаем сервер через uv
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
