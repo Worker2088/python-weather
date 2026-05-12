@@ -1,24 +1,60 @@
-import requests
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
-
-from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.contrib import messages
 
+
+from users.exceptions import UserAlreadyExists
 from users.forms import CustomLoginForm, RegisterUserForm
+from users.services import AuthService
 
-
-# from users.forms import LoginUserForm
 
 # заменяем метод def sign_in(request) на этот класс
-# для того чтобы использовать встроенную Django архитектуру без самописного кода авторизации
 class CustomLoginView(LoginView):
     template_name = 'users/sign-in.html'
     authentication_form = CustomLoginForm
+
+
+# заменяем метод def sign_up(request) на этот класс
+# для того чтобы использовать встроенную Django архитектуру без самописного кода авторизации
+class RegisterView(CreateView):
+    form_class = RegisterUserForm
+    template_name = 'users/sign-up.html'
+    success_url = reverse_lazy('locations:home')
+
+    def form_valid(self, form):
+
+        try:
+            user = AuthService.register_user(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
+            )
+        except UserAlreadyExists:
+            messages.error(self.request, "пользователь с таким именем уже есть существует")
+            return self.form_invalid(form)
+
+        self.object = user
+        # автологин после реги
+        login(self.request, user)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+
+# def sign_up(request):
+#     if request.method == "POST":
+#         form = RegisterUserForm(request.POST)
+#
+#         if form.is_valid():
+#             form.save()  # ← ВСЁ, этого достаточно
+#             # return render(request, 'locations/index.html')
+#             return redirect('locations:home')
+#     else:
+#         form = RegisterUserForm()
+#
+#     return render(request, 'users/sign-up.html', {'form': form})
 
 # def sign_in(request):
 #     if request.method == "POST":
@@ -34,33 +70,4 @@ class CustomLoginView(LoginView):
 #     else:
 #         form = LoginUserForm()
 #     return render(request, 'users/sign-in.html', {'form': form})
-
-# заменяем метод def sign_up(request) на этот класс
-# для того чтобы использовать встроенную Django архитектуру без самописного кода авторизации
-class RegisterView(CreateView):
-    # используем нашу форму RegisterUserForm когда надо добавить доп.поля в регистрацию
-    form_class = RegisterUserForm
-    template_name = 'users/sign-up.html'
-    success_url = reverse_lazy('locations:home')
-
-    # автологин после реги
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        login(self.request, self.object)
-        return response
-
-def sign_up(request):
-    if request.method == "POST":
-        form = RegisterUserForm(request.POST)
-
-        if form.is_valid():
-            form.save()  # ← ВСЁ, этого достаточно
-            # return render(request, 'locations/index.html')
-            return redirect('locations:home')
-    else:
-        form = RegisterUserForm()
-
-    return render(request, 'users/sign-up.html', {'form': form})
-
-
 

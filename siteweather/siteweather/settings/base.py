@@ -1,0 +1,211 @@
+"""
+базовый шаблон настроек
+"""
+import os
+import json
+from pathlib import Path
+
+from dotenv import load_dotenv
+import logging
+# import logging.config
+# from logging import getLogger
+
+
+print("==== DJANGO DEBUG CHECK ====")
+print("DJANGO_SETTINGS_MODULE =", os.environ.get("DJANGO_SETTINGS_MODULE"))
+print("ENV DEBUG RAW =", os.environ.get("DEBUG"))
+print("ENV ALLOWED_HOSTS RAW =", os.environ.get("ALLOWED_HOSTS"))
+
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+config = None
+
+try:
+    with open(BASE_DIR / "logs" / "logging.json", "r") as file:
+        config = json.load(file)
+        print("logging.json успешно прочитан")
+
+except (json.JSONDecodeError, FileNotFoundError) as e:
+    config = None
+    print("Ошибка загрузки logging.json %s", e)
+
+if config:
+    LOGGING = config
+    print("LOGGING: JSON CONFIG USED")
+
+else:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+            },
+        },
+
+        "root": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
+    }
+    print("Используется fallback LOGGING (console)")
+
+# создаем переменную с АПИ ключом
+load_dotenv()
+OPENWEATHER_API_KEY = os.getenv("API_KEY")
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-ub^2&1(av3b&v^(x^p35(-5vh!4n_e%+hioq8dmb(qqr=*!j&!'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+print("DEBUG =", DEBUG)
+print("ALLOWED_HOSTS =", ALLOWED_HOSTS)
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'locations.apps.LocationsConfig',
+    'users.apps.UsersConfig',
+    'django_extensions',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'siteweather.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR.parent / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'siteweather.wsgi.application'
+
+
+# Database
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'weather_db'),      # Имя базы из .env
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),      # Юзер из .env
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'pass'),  # Пароль из .env
+        'HOST': 'db',                                        # ИМЯ СЕРВИСА В DOCKER
+        'PORT': '5432',                                      # Стандартный порт
+    }
+}
+
+
+# Password validation
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+# кэш джанго
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+#         "LOCATION": "weather-cache",
+#         "TIMEOUT": 6000,
+#     }
+# }
+# кэш redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Internationalization
+# https://docs.djangoproject.com/en/6.0/topics/i18n/
+
+LANGUAGE_CODE = 'ru-RU'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/6.0/howto/static-files/
+
+# URL, по которому статика будет доступна в браузере
+STATIC_URL = 'static/'
+
+# Список путей, где Django будет искать статику ПОМИМО папок внутри приложений
+STATICFILES_DIRS = [
+    BASE_DIR.parent / "static",
+]
+
+# Папка, куда соберется вся статика для деплоя (команда collectstatic)
+# На этапе разработки она не используется, но должна быть указана
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+LOGIN_REDIRECT_URL = 'locations:home'
+LOGOUT_REDIRECT_URL = 'locations:home'
+
+# где храним сессии (в db)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# продолжительность сессии в сек
+SESSION_COOKIE_AGE = 1209600  # 2 недели
+# сохранять ли сессию при КАЖДОМ запросе.
+# True - после каждого сеанса сессия обновляется, удобно чтоб не разлогиневать активных пользователей,
+# больше нагрузка на бд
+# False быстрее, меньше нагрузка
+SESSION_SAVE_EVERY_REQUEST = False
+
+# говорим куда писать данные регистраций
+# в этом случае будем использовать не типовую таблицу auth.user от Django
+# а нашу специально созданную под наши требования
+AUTH_USER_MODEL = 'users.User'
+

@@ -1,6 +1,6 @@
 from django.db import models
 
-from siteweather import settings
+from django.conf import settings
 
 
 class Location(models.Model):

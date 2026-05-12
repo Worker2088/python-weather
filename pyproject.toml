@@ -17,3 +17,12 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "requests>=2.33.1",
 ]
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "siteweather.settings.test"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "responses>=0.26.0",
+]

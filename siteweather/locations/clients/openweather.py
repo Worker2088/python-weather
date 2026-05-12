@@ -7,7 +7,8 @@ from requests import Timeout, HTTPError
 
 from locations.dto import WeatherDTO
 from locations.exceptions import WeatherServiceUnavailable, CityNotFound, WeatherAPIError
-from siteweather.settings import OPENWEATHER_API_KEY
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +16,15 @@ logger = logging.getLogger(__name__)
 def get_weather_api_openweather(city: str) -> WeatherDTO:
     url = "https://api.openweathermap.org/data/2.5/weather"
 
-    # logger.info("получаем погоду для %s", city)
+    logger.info("получаем погоду для %s", city)
 
     params = {
         "q": city,
-        "appid": OPENWEATHER_API_KEY,
+        "appid": settings.OPENWEATHER_API_KEY,
         "units": "metric",
         "lang": "ru"
     }
-    # logger.debug("Отправляю запрос %s | %s", url, params)
+
     try:
         response = requests.get(url, params=params, timeout=(3, 5))
         response.raise_for_status()
@@ -32,19 +33,18 @@ def get_weather_api_openweather(city: str) -> WeatherDTO:
 
         response_dto = json_to_dto(response.json())
 
-    except Timeout:
-        raise WeatherServiceUnavailable()
-
-    except ConnectionError:
+    except (Timeout, ConnectionError):
+        logger.exception("сервер погоды не отвечает")
         raise WeatherServiceUnavailable()
 
     except HTTPError as e:
-        if e.response is not None:
-            status = e.response.status_code
-            if status == 404:
-                raise CityNotFound()
-            else:
-                raise WeatherServiceUnavailable()
+        status = e.response.status_code
+
+        if status == 404:
+            raise CityNotFound()
+
+        logger.exception("ошибка HTTPError")
+        raise WeatherServiceUnavailable()
 
     return response_dto
 
