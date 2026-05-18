@@ -13,8 +13,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # Список доменов, на которых работает приложение
 # Пример: weather.com,api.weather.com
-# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-ALLOWED_HOSTS = ["213.171.29.209"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # 2. Настройки безопасности HTTP/SSL
 # Говорим Django, что если Nginx передал заголовок X-Forwarded-Proto: https,

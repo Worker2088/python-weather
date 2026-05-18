@@ -45,7 +45,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_NAME}
-      - DJANGO_SETTINGS_MODULE=siteweather.settings.local
+      - DJANGO_SETTINGS_MODULE=siteweather.settings.production
     networks:
       - weather_network
 

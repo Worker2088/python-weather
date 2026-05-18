@@ -9,7 +9,7 @@ import sys
 
 def main() -> None:
     """Выполняет административные задачи."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "siteweather.settings.local")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "siteweather.settings.production")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
