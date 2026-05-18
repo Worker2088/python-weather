@@ -21,7 +21,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Редирект с http на https
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
 # Защита кук: передавать только по HTTPS
 SESSION_COOKIE_SECURE = True
