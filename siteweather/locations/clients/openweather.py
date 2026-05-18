@@ -2,6 +2,7 @@
 Модуль для взаимодействия с внешним API OpenWeather.
 Содержит функции для получения данных о погоде и преобразования их в DTO.
 """
+
 import logging
 from typing import Any
 
@@ -10,7 +11,11 @@ from pydantic import ValidationError
 from requests import Timeout, HTTPError
 
 from locations.dto import WeatherDTO
-from locations.exceptions import WeatherServiceUnavailable, CityNotFound, WeatherAPIError
+from locations.exceptions import (
+    WeatherServiceUnavailable,
+    CityNotFound,
+    WeatherAPIError,
+)
 from django.conf import settings
 
 
@@ -40,7 +45,7 @@ def get_weather_api_openweather(city: str) -> WeatherDTO:
         "q": city,
         "appid": settings.OPENWEATHER_API_KEY,
         "units": "metric",
-        "lang": "ru"
+        "lang": "ru",
     }
 
     try:

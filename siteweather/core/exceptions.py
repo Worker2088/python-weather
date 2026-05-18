@@ -3,11 +3,6 @@
 
 """
 
-class BaseAppException(Exception): pass
 
-
-
-
-
-
-
+class BaseAppException(Exception):
+    pass

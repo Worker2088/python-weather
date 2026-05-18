@@ -31,10 +31,7 @@ class AuthService:
             UserAlreadyExists: Если пользователь с таким логином уже существует.
         """
         try:
-            user = UserRepository.create_user(
-                username=username,
-                password=password
-            )
+            user = UserRepository.create_user(username=username, password=password)
         except IntegrityError:
             raise UserAlreadyExists()
 

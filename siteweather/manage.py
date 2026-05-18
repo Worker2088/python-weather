@@ -2,13 +2,14 @@
 Утилита командной строки Django для административных задач.
 Позволяет выполнять миграции, запускать сервер разработки и другие команды.
 """
+
 import os
 import sys
 
 
 def main() -> None:
     """Выполняет административные задачи."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'siteweather.settings.local')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "siteweather.settings.local")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -20,5 +21,5 @@ def main() -> None:
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

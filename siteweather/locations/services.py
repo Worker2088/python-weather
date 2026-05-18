@@ -80,7 +80,9 @@ def delete_city(user: User, name_city: str) -> None:
         user (User): Объект пользователя.
         name_city (str): Название города для удаления.
     """
-    logger.info("вызван метод удаления города %s из базы данных %s", name_city, user.username)
+    logger.info(
+        "вызван метод удаления города %s из базы данных %s", name_city, user.username
+    )
 
     logger.debug("user=user %s name=city_name %s", user.username, name_city)
     LocationRepository.delete_city_repo(user=user, name_city=name_city)
@@ -104,4 +106,8 @@ def add_city(user: User, location_dto: CreateLocationDTO) -> None:
 
     LocationRepository.add_city_repo(user=user, dto=location_dto)
 
-    logger.debug("создал и сохранил объект Локация %s для юзера %s", location_dto.city, user.username)
+    logger.debug(
+        "создал и сохранил объект Локация %s для юзера %s",
+        location_dto.city,
+        user.username,
+    )

@@ -12,6 +12,7 @@ from users.models import User
 
 logger = logging.getLogger(__name__)
 
+
 class LocationRepository:
     """
     Класс-репозиторий для выполнения CRUD операций с моделью Location.
@@ -26,10 +27,7 @@ class LocationRepository:
     def add_city_repo(user: User, dto: CreateLocationDTO) -> Location:
         """Добавляет новый город в БД."""
         return Location.objects.create(
-            user=user,
-            name=dto.city,
-            latitude=dto.lat,
-            longitude=dto.lon
+            user=user, name=dto.city, latitude=dto.lat, longitude=dto.lon
         )
 
     @staticmethod

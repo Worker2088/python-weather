@@ -51,6 +51,7 @@ class CreateLocationDTO(BaseModel):
     """
     DTO для валидации данных при создании новой локации.
     """
+
     city: str
     lon: float = Field(ge=-180, le=180)
     lat: float = Field(ge=-90, le=90)
@@ -65,7 +66,6 @@ class CreateLocationDTO(BaseModel):
             raise ValueError("Координата отсутствует")
 
         return float(str(value).replace(",", "."))
-
 
     @field_validator("city", mode="before")
     @classmethod

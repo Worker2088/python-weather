@@ -1,6 +1,7 @@
 """
 sittings для локальной разработки
 """
+
 from .base import *
 
 DEBUG = True

@@ -18,7 +18,4 @@ class UserRepository:
         """
         Создает нового пользователя.
         """
-        return User.objects.create_user(
-        username=username,
-        password=password
-        )
+        return User.objects.create_user(username=username, password=password)

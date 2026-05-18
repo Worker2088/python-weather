@@ -9,4 +9,5 @@ class LocationsConfig(AppConfig):
     """
     Класс конфигурации для приложения locations.
     """
-    name = 'locations'
+
+    name = "locations"

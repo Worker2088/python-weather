@@ -9,4 +9,5 @@ class UsersConfig(AppConfig):
     """
     Класс конфигурации для приложения users.
     """
-    name = 'users'
+
+    name = "users"

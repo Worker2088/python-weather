@@ -2,9 +2,12 @@
 Базовый шаблон настроек для проекта siteweather.
 Содержит общие настройки для всех окружений.
 """
+
 import os
 import json
 from pathlib import Path
+import logging
+import logging.config
 
 from dotenv import load_dotenv
 
@@ -16,40 +19,39 @@ config = None
 try:
     with open(BASE_DIR / "logs" / "logging.json", "r") as file:
         config = json.load(file)
-        print("logging.json успешно прочитан")
+        # print("logging.json успешно прочитан")
 
 
-except (json.JSONDecodeError, FileNotFoundError) as e:
+except (json.JSONDecodeError, FileNotFoundError):
     config = None
-    print("Ошибка загрузки logging.json %s", e)
+    # print("Ошибка загрузки logging.json %s", e)
 
 if config:
-    LOGGING = config
-    print("LOGGING: JSON CONFIG USED")
+    # LOGGING = config
+    logging.config.dictConfig(config)
+    # print("LOGGING: JSON CONFIG USED")
 
-else:
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-            },
-        },
-
-        "root": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-        },
-    }
-    print("Используется fallback LOGGING (console)")
+# else:
+#     LOGGING = {
+#         "version": 1,
+#         "disable_existing_loggers": False,
+#         "handlers": {
+#             "console": {
+#                 "class": "logging.StreamHandler",
+#             },
+#         },
+#         "root": {
+#             "handlers": ["console"],
+#             "level": "DEBUG",
+#         },
+#     }
+# print("Используется fallback LOGGING (console)")
 
 # создаем переменную с АПИ ключом
 load_dotenv()
 OPENWEATHER_API_KEY = os.getenv("API_KEY")
 
-SECRET_KEY = 'django-insecure-ub^2&1(av3b&v^(x^p35(-5vh!4n_e%+hioq8dmb(qqr=*!j&!'
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 DEBUG = True
 
@@ -57,69 +59,69 @@ ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'locations.apps.LocationsConfig',
-    'users.apps.UsersConfig',
-    'django_extensions',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "locations.apps.LocationsConfig",
+    "users.apps.UsersConfig",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'siteweather.urls'
+ROOT_URLCONF = "siteweather.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR.parent / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR.parent / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'siteweather.wsgi.application'
+WSGI_APPLICATION = "siteweather.wsgi.application"
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'weather_db'),      # Имя базы из .env
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),      # Юзер из .env
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'pass'),  # Пароль из .env
-        'HOST': 'db',                                        # ИМЯ СЕРВИСА В DOCKER
-        'PORT': '5432',                                      # Стандартный порт
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "weather_db"),  # Имя базы из .env
+        "USER": os.getenv("POSTGRES_USER", "postgres"),  # Юзер из .env
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "pass"),  # Пароль из .env
+        "HOST": "db",  # ИМЯ СЕРВИСА В DOCKER
+        "PORT": "5432",  # Стандартный порт
     }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -139,20 +141,20 @@ CACHES = {
         "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
 
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = "ru-RU"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_TZ = True
 
 # URL, по которому статика будет доступна в браузере
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 # Список путей, где Django будет искать статику ПОМИМО папок внутри приложений
 STATICFILES_DIRS = [
@@ -163,11 +165,11 @@ STATICFILES_DIRS = [
 # На этапе разработки она не используется, но должна быть указана
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-LOGIN_REDIRECT_URL = 'locations:home'
-LOGOUT_REDIRECT_URL = 'locations:home'
+LOGIN_REDIRECT_URL = "locations:home"
+LOGOUT_REDIRECT_URL = "locations:home"
 
 # где храним сессии (в db)
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # продолжительность сессии в сек
 SESSION_COOKIE_AGE = 1209600  # 2 недели
 
@@ -180,4 +182,4 @@ SESSION_SAVE_EVERY_REQUEST = False
 # говорим куда писать данные регистраций
 # в этом случае будем использовать не типовую таблицу auth.user от Django
 # а нашу специально созданную под наши требования
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"

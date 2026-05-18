@@ -9,7 +9,7 @@ DEBUG = False
 
 # Используем быстрый хешер для тестов
 PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.MD5PasswordHasher',
+    "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
 
 

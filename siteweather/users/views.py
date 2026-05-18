@@ -19,7 +19,8 @@ class CustomLoginView(LoginView):
     """
     Представление для входа пользователя в систему.
     """
-    template_name = 'users/sign-in.html'
+
+    template_name = "users/sign-in.html"
     authentication_form = CustomLoginForm
 
 
@@ -27,9 +28,10 @@ class RegisterView(CreateView):
     """
     Представление для регистрации нового пользователя.
     """
+
     form_class = RegisterUserForm
-    template_name = 'users/sign-up.html'
-    success_url = reverse_lazy('locations:home')
+    template_name = "users/sign-up.html"
+    success_url = reverse_lazy("locations:home")
 
     def form_valid(self, form: RegisterUserForm) -> HttpResponse:
         """
@@ -44,11 +46,13 @@ class RegisterView(CreateView):
         """
         try:
             user = AuthService.register_user(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password1'],
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password1"],
             )
         except UserAlreadyExists:
-            messages.error(self.request, "пользователь с таким именем уже есть существует")
+            messages.error(
+                self.request, "пользователь с таким именем уже есть существует"
+            )
             return self.form_invalid(form)
 
         self.object = user

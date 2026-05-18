@@ -13,7 +13,8 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # Список доменов, на которых работает приложение
 # Пример: weather.com,api.weather.com
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = ["213.171.29.209"]
 
 # 2. Настройки безопасности HTTP/SSL
 # Говорим Django, что если Nginx передал заголовок X-Forwarded-Proto: https,
@@ -40,14 +41,14 @@ X_FRAME_OPTIONS = "DENY"
 # 3. База данных (Production конфигурация)
 # Полагаемся на переменные окружения, которые передает Docker Compose
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'db'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        'CONN_MAX_AGE': 600,  # Повторное использование соединений (Performance)
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST", "db"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "CONN_MAX_AGE": 600,  # Повторное использование соединений (Performance)
     }
 }
 
@@ -72,7 +73,7 @@ LOGGING = {
         "file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs/django_error.log",
+            "filename": BASE_DIR / "logs/data.log",
             "formatter": "verbose",
         },
     },
