@@ -28,9 +28,9 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 # HSTS (Strict-Transport-Security) — заставляет браузер всегда использовать HTTPS
-SECURE_HSTS_SECONDS = 31536000  # 1 год
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_SECONDS = 0  # 1 год
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 
 # Защита от XSS и встраивания во фреймы
 SECURE_BROWSER_XSS_FILTER = True
