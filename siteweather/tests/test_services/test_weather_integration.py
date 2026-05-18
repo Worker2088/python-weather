@@ -1,3 +1,9 @@
+"""
+Интеграционные тесты для сервиса погоды.
+Проверяют взаимодействие сервиса с внешним API через моки.
+"""
+from typing import Any
+
 import pytest
 import responses
 from django.conf import settings
@@ -9,13 +15,16 @@ from locations.dto import WeatherDTO
 
 @pytest.mark.django_db
 class TestWeatherIntegration:
+    """
+    Набор тестов для интеграции с API погоды.
+    """
 
     # перехватываю HTTP-запросы через библиотеку responses и подменяю их моками
     @responses.activate
-    def test_find_location_by_name_success(self, openweather_success_data):
+    def test_find_location_by_name_success(self, openweather_success_data: dict[str, Any]) -> None:
         """Проверка успешной цепочки: Service -> Client -> HTTP Mock -> DTO"""
         # 1. Arrange: Настраиваем перехват запроса
-        # URL должен совпадать с тем, что формирует ваш клиент
+        # URL должен совпадать с тем, что формирует клиент
         search_name = "Moscow"
         api_url = "https://api.openweathermap.org/data/2.5/weather"
 
@@ -39,10 +48,11 @@ class TestWeatherIntegration:
 
 
     @responses.activate
-    def test_find_location_api_returns_error(self):
+    def test_find_location_api_returns_error(self) -> None:
         """Проверка обработки 4xx/5xx ошибок от внешнего сервиса"""
         # 1. Arrange
         api_url = "https://api.openweathermap.org/data/2.5/weather"
+
         responses.add(
             method=responses.GET,
             url=api_url,

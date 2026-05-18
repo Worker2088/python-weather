@@ -1,3 +1,7 @@
+"""
+Конфигурация админки для приложения locations.
+"""
+
 from django.contrib import admin
 from .models import Location
 

@@ -1,31 +1,31 @@
-import json
-from unicodedata import decimal
+"""
+Модуль представлений (views) для приложения locations.
+Обрабатывает HTTP-запросы для отображения главной страницы, поиска, добавления и удаления городов.
+"""
+
 import logging
 
-import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 from pydantic import ValidationError
 
-from locations.models import Location
 from .dto import CreateLocationDTO
 from .exceptions import LocationAlreadyExists, WeatherServiceUnavailable, CityNotFound, WeatherAPIError
-from .services import add_city, get_weather_api_openweather, get_all_cities_of_user, delete_city, get_weather
+from .services import add_city, get_all_cities_of_user, delete_city, get_weather
 
 logger = logging.getLogger(__name__)
 
 
-def index(request):
+def index(request: HttpRequest) -> HttpResponse:
+    """Отображает главную страницу."""
     cities_dto_list = []
 
     if request.user.is_authenticated:
         cities_name_list = get_all_cities_of_user(request.user)
-        # logger.debug("все локации юзера %s: %s", request.user.username, cities_name_list)
 
         try:
             for city in cities_name_list:
@@ -48,7 +48,8 @@ def index(request):
 
 @login_required
 @require_POST
-def delete(request):
+def delete(request: HttpRequest) -> HttpResponse:
+    """Удаляет город из списка."""
     logger.debug("получил запрос от юзера %s на удаление %s", request.user.username, request.POST.get("city_name"))
     city_name = request.POST.get("city_name")
 
@@ -66,7 +67,8 @@ def delete(request):
     return redirect("locations:home")
 
 
-def add(request):
+def add(request: HttpRequest) -> HttpResponse:
+    """Добавляет город в список."""
 
     if not request.user.is_authenticated:
         return redirect("users:sign-in")
@@ -77,17 +79,22 @@ def add(request):
     logger.debug("начинаю добавлять локацию %s для юзера %s", request.POST.get("city"), request.user.username)
 
     try:
+        city = request.POST.get("city")
+        lat = request.POST.get("lat")
+        lon = request.POST.get("lon")
+
         dto = CreateLocationDTO(
-            city=request.POST.get("city"),
-            lat=request.POST.get("lat"),
-            lon=request.POST.get("lon"),
+            city=city,
+            lat=lat,
+            lon=lon,
         )
 
         add_city(request.user, dto)
         messages.success(request, f"Город {dto.city} добавлен в список")
 
-    except ValidationError:
-        messages.error(request, "Некорректные координаты")
+    except ValidationError as e :
+        msg = e.errors()[0]["msg"]
+        messages.error(request, msg)
         return redirect("locations:search-results")
 
     except LocationAlreadyExists:
@@ -96,7 +103,8 @@ def add(request):
     return redirect('locations:home')
 
 
-def search(request):
+def search(request: HttpRequest) -> HttpResponse:
+    """Выполняет поиск города."""
     city = request.GET.get("name")
     data = None
 

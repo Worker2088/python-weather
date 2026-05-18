@@ -1,9 +1,17 @@
+"""
+Модуль форм для приложения users.
+Определяет формы для входа и регистрации пользователей с кастомной стилизацией.
+"""
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 
 class CustomLoginForm(AuthenticationForm):
+    """
+    Форма для аутентификации пользователя с применением кастомных CSS-классов.
+    """
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-input'})
     )
@@ -13,6 +21,9 @@ class CustomLoginForm(AuthenticationForm):
 
 # класс UserCreationForm уже умеет хэшировать пароли, делать валидацию
 class RegisterUserForm(UserCreationForm):
+    """
+    Форма для регистрации нового пользователя.
+    """
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))

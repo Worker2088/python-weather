@@ -6,5 +6,3 @@ from .base import *
 DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
-# Здесь можно переопределить БД для локальной разработки, если нужно

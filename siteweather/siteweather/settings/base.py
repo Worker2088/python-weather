@@ -1,23 +1,14 @@
 """
-базовый шаблон настроек
+Базовый шаблон настроек для проекта siteweather.
+Содержит общие настройки для всех окружений.
 """
 import os
 import json
 from pathlib import Path
 
 from dotenv import load_dotenv
-import logging
-# import logging.config
-# from logging import getLogger
 
 
-print("==== DJANGO DEBUG CHECK ====")
-print("DJANGO_SETTINGS_MODULE =", os.environ.get("DJANGO_SETTINGS_MODULE"))
-print("ENV DEBUG RAW =", os.environ.get("DEBUG"))
-print("ENV ALLOWED_HOSTS RAW =", os.environ.get("ALLOWED_HOSTS"))
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 config = None
@@ -26,6 +17,7 @@ try:
     with open(BASE_DIR / "logs" / "logging.json", "r") as file:
         config = json.load(file)
         print("logging.json успешно прочитан")
+
 
 except (json.JSONDecodeError, FileNotFoundError) as e:
     config = None
@@ -57,19 +49,12 @@ else:
 load_dotenv()
 OPENWEATHER_API_KEY = os.getenv("API_KEY")
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ub^2&1(av3b&v^(x^p35(-5vh!4n_e%+hioq8dmb(qqr=*!j&!'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-print("DEBUG =", DEBUG)
-print("ALLOWED_HOSTS =", ALLOWED_HOSTS)
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -112,10 +97,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'siteweather.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -126,10 +107,6 @@ DATABASES = {
         'PORT': '5432',                                      # Стандартный порт
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -145,6 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 # кэш джанго
 # CACHES = {
 #     "default": {
@@ -153,6 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 #         "TIMEOUT": 6000,
 #     }
 # }
+
 # кэш redis
 CACHES = {
     "default": {
@@ -164,9 +143,6 @@ CACHES = {
     }
 }
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
@@ -174,10 +150,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 # URL, по которому статика будет доступна в браузере
 STATIC_URL = 'static/'
@@ -198,7 +170,8 @@ LOGOUT_REDIRECT_URL = 'locations:home'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # продолжительность сессии в сек
 SESSION_COOKIE_AGE = 1209600  # 2 недели
-# сохранять ли сессию при КАЖДОМ запросе.
+
+# сохранять ли сессию при КАЖДОМ запросе
 # True - после каждого сеанса сессия обновляется, удобно чтоб не разлогиневать активных пользователей,
 # больше нагрузка на бд
 # False быстрее, меньше нагрузка
@@ -208,4 +181,3 @@ SESSION_SAVE_EVERY_REQUEST = False
 # в этом случае будем использовать не типовую таблицу auth.user от Django
 # а нашу специально созданную под наши требования
 AUTH_USER_MODEL = 'users.User'
-

@@ -1,3 +1,8 @@
+"""
+Модуль сервисного слоя для работы с локациями.
+Содержит бизнес-логику для получения погоды, управления списком городов пользователя.
+"""
+
 import logging
 
 from django.core.cache import cache
@@ -13,6 +18,16 @@ logger = logging.getLogger(__name__)
 
 
 def get_weather(city: str) -> WeatherDTO:
+    """
+    Получает данные о погоде для указанного города.
+    Сначала проверяет наличие данных в кэше, если их нет — запрашивает через API.
+
+    Args:
+        city (str): Название города.
+
+    Returns:
+        WeatherDTO: Объект с данными о погоде.
+    """
     logger.info("начинаю получение погоды для %s", city)
 
     # кэширование, проверяю есть ли в город в кэше
@@ -36,7 +51,16 @@ def get_weather(city: str) -> WeatherDTO:
     return data
 
 
-def get_all_cities_of_user(user) -> list:
+def get_all_cities_of_user(user: User) -> list[str]:
+    """
+    Возвращает список названий всех городов, добавленных пользователем.
+
+    Args:
+        user (User): Объект пользователя.
+
+    Returns:
+        list[str]: Список названий городов.
+    """
     locs = LocationRepository.get_user_cities_repo(user)
     logger.debug("locs %s", locs)
 
@@ -49,6 +73,13 @@ def get_all_cities_of_user(user) -> list:
 
 
 def delete_city(user: User, name_city: str) -> None:
+    """
+    Удаляет город из списка пользователя.
+
+    Args:
+        user (User): Объект пользователя.
+        name_city (str): Название города для удаления.
+    """
     logger.info("вызван метод удаления города %s из базы данных %s", name_city, user.username)
 
     logger.debug("user=user %s name=city_name %s", user.username, name_city)
@@ -57,14 +88,20 @@ def delete_city(user: User, name_city: str) -> None:
     logger.info("удален города %s из базы данных юзера %s", name_city, user.username)
 
 
-
 def add_city(user: User, location_dto: CreateLocationDTO) -> None:
+    """
+    Добавляет город в список пользователя.
 
+    Args:
+        user (User): Объект пользователя.
+        location_dto (CreateLocationDTO): DTO с данными добавляемой локации.
+
+    Raises:
+        LocationAlreadyExists: Если город уже добавлен пользователем.
+    """
     if LocationRepository.city_exists(user, location_dto.city):
         raise LocationAlreadyExists()
 
     LocationRepository.add_city_repo(user=user, dto=location_dto)
 
     logger.debug("создал и сохранил объект Локация %s для юзера %s", location_dto.city, user.username)
-
-

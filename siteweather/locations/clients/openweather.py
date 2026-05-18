@@ -1,5 +1,9 @@
-import json
+"""
+Модуль для взаимодействия с внешним API OpenWeather.
+Содержит функции для получения данных о погоде и преобразования их в DTO.
+"""
 import logging
+from typing import Any
 
 import requests
 from pydantic import ValidationError
@@ -14,6 +18,20 @@ logger = logging.getLogger(__name__)
 
 
 def get_weather_api_openweather(city: str) -> WeatherDTO:
+    """
+    Получает данные о погоде для указанного города через OpenWeather API.
+
+    Args:
+        city (str): Название города.
+
+    Returns:
+        WeatherDTO: Объект с данными о погоде.
+
+    Raises:
+        WeatherServiceUnavailable: Если сервер погоды недоступен или произошел таймаут.
+        CityNotFound: Если город не найден.
+        WeatherAPIError: Если произошла ошибка при обработке ответа API.
+    """
     url = "https://api.openweathermap.org/data/2.5/weather"
 
     logger.info("получаем погоду для %s", city)
@@ -50,7 +68,19 @@ def get_weather_api_openweather(city: str) -> WeatherDTO:
 
 
 # mappers
-def json_to_dto(weather_json: json) -> WeatherDTO:
+def json_to_dto(weather_json: dict[str, Any]) -> WeatherDTO:
+    """
+    Преобразует JSON-ответ от OpenWeather API в объект WeatherDTO.
+
+    Args:
+        weather_json (dict[str, Any]): Словарь с данными ответа API.
+
+    Returns:
+        WeatherDTO: Объект с данными о погоде.
+
+    Raises:
+        WeatherAPIError: Если структура JSON не соответствует ожидаемой или возникла ошибка валидации.
+    """
     logger.debug("преобразовываю JSON в ДТО")
 
     try:
